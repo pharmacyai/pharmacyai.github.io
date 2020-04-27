@@ -5,12 +5,162 @@
     <link>/</link>
       <atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <description>Pharmacy AI</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 27 Apr 2020 22:10:49 +0200</lastBuildDate>
     <image>
       <url>/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
       <title>Pharmacy AI</title>
       <link>/</link>
     </image>
+    
+    <item>
+      <title>Computational methods for detecting drug-drug interactions (DDIs)</title>
+      <link>/post/ddi_introduction/</link>
+      <pubDate>Mon, 27 Apr 2020 22:10:49 +0200</pubDate>
+      <guid>/post/ddi_introduction/</guid>
+      <description>&lt;p&gt;A drug interaction is a reaction between drug and other drugs, food, or supplements. These interactions may make drug less effective, cause unexpected side effects, or increase the action of a drug. On one side, combinations of drug therapies are showing promising results for several diseases, however on the other side drug interaction side effects can lead to adverse drug events (ADEs) or adverse drug reactions (ADRs).&lt;/p&gt;
+&lt;p&gt;Drug-drug interactions (DDI) refers to the efficacy change of drug in case of co-administration with another drug. It is estimated that over 30% of all adverse drug reactions are due to drug interactions, [1, 2]. Due to complexity of this problem, it unfeasible to identify all potential DDIs using experimentational methods. We are also learning about a lot of interactions from clinical trials and post-marketing drug surveillance (PMS).&lt;/p&gt;
+&lt;p&gt;Therefore, there is a pressure need, and huge opportunity, for advancements in computational methods for detecting DDIs. There are two main categories from which we can approach:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;classification methods&lt;/strong&gt;: using various drug information detect potential DDI, drug pairs, during the drug development process or find new DDIs from existing set of drugs&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;knowledge-based methods&lt;/strong&gt;: from corpus of medical content (scientific literature, blogs, etc.) extract information about drug interaction&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In this post, we will give quick high-level overview of classification method, and data sources from which we will start exploring the solution space. Before we dig in into a bit more technical conversations, here is a great TED talk by Russ Altman (an American professor of bioengineering, genetics, medicine, and biomedical data science and past chairman of the bioengineering department at Stanford University) about what happens when you mix medications.&lt;/p&gt;
+
+&lt;div style=&#34;position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;&#34;&gt;
+  &lt;iframe src=&#34;https://www.youtube.com/embed/avuhY7D71sQ&#34; style=&#34;position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;&#34; allowfullscreen title=&#34;YouTube Video&#34;&gt;&lt;/iframe&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&#34;classification-methods-approch&#34;&gt;Classification methods approch&lt;/h2&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Statistical_classification&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Classification represents&lt;/a&gt; a problem of identifying to which category, or set of categories, new object belongs. In case of DDI, we are looking at drug pairs and we want to predict if given pair of drugs will lead to adverse drug reaction. This is called binary classification problem because we have two classes. In case if we are interested in type of reaction, problem moves to be multiclass classification area but for purpose of this post let us consider only two classes: DDI and non-DDI.&lt;/p&gt;
+&lt;p&gt;Usually, classification problem requires us to train a model, a function, which maps object to category (or probability for each of the possible categories). For us to find the optimal model parameters, we need dataset containing example objects for both classes. For example, creating a model for classification of profile images to male and female requires us to have a dataset with example profile images of both male and female.&lt;/p&gt;
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+&lt;figure id=&#34;figure-ddi-classification-approch-mapping-two-drugs-into-probability-that-they-are-ddi-pair&#34;&gt;
+
+
+  &lt;a data-fancybox=&#34;&#34; href=&#34;/post/ddi_introduction/classification_huc0ebb99d5edb9d5389519b2485091b81_18934_2000x2000_fit_lanczos_2.PNG&#34; data-caption=&#34;DDI classification approch: mapping two drugs into probability that they are DDI pair&#34;&gt;
+
+
+  &lt;img data-src=&#34;/post/ddi_introduction/classification_huc0ebb99d5edb9d5389519b2485091b81_18934_2000x2000_fit_lanczos_2.PNG&#34; class=&#34;lazyload&#34; alt=&#34;&#34; width=&#34;1109&#34; height=&#34;149&#34;&gt;
+&lt;/a&gt;
+
+
+  
+  
+  &lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; class=&#34;numbered&#34;&gt;
+    DDI classification approch: mapping two drugs into probability that they are DDI pair
+  &lt;/figcaption&gt;
+
+
+&lt;/figure&gt;
+
+&lt;p&gt;DDI is an example of a 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/One-class_classification&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;one-class classification problem&lt;/a&gt;. We have set of samples from one class, DDI in our case which we will call positive class, and unlabeled samples. For DDI, unlabeled samples represent all the drug pairs for which we do not have information that they might have interaction in case of coadministration. This means that we do not have information about instances from unlabeled dataset, they could be positive or negative. In order to apply classification approach, we need instances of both positive and negative classes.  There are various techniques how can reliable negative samples be extracted from unlabeled dataset.&lt;/p&gt;
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+&lt;figure id=&#34;figure-one-class-classification-ddi-overview&#34;&gt;
+
+
+  &lt;a data-fancybox=&#34;&#34; href=&#34;/post/ddi_introduction/one_class_classification_hu88d8641d34385449b086fbd77d6abd43_83149_2000x2000_fit_q90_lanczos.jpg&#34; data-caption=&#34;One-class classification DDI overview&#34;&gt;
+
+
+  &lt;img data-src=&#34;/post/ddi_introduction/one_class_classification_hu88d8641d34385449b086fbd77d6abd43_83149_2000x2000_fit_q90_lanczos.jpg&#34; class=&#34;lazyload&#34; alt=&#34;&#34; width=&#34;1350&#34; height=&#34;583&#34;&gt;
+&lt;/a&gt;
+
+
+  
+  
+  &lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; class=&#34;numbered&#34;&gt;
+    One-class classification DDI overview
+  &lt;/figcaption&gt;
+
+
+&lt;/figure&gt;
+
+&lt;p&gt;Let us look at the 
+&lt;a href=&#34;https://www.drugbank.ca&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;DrugBank&lt;/a&gt; [3], one of the online available drug data sources. Database contains various information about drugs, like chemical structure or drug targets, and for each drug it contains list of drugs with which there is an interaction. This is example of dataset we can use for training the DDI classification models.&lt;/p&gt;
+&lt;p&gt;Drugs are complex objects, and in order to apply computational methods over them we need to represent them in vector form, as list of numbers. As noted, drug has multiple different properties, such as chemical structure, targets, indications, pathways, substituents etc. Each of the component tells us different drug property, but they are also correlated to an extent.&lt;/p&gt;
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+&lt;figure id=&#34;figure-example-of-arguably-a-bit-odd-vector-representation-in-r5-vector-of-5-numbers&#34;&gt;
+
+
+  &lt;a data-fancybox=&#34;&#34; href=&#34;/post/ddi_introduction/drug_vector_example_hu9cd605cb530a37bf9f49f7d51f0a0a7a_25283_2000x2000_fit_lanczos_2.PNG&#34; data-caption=&#34;Example of, arguably a bit odd, vector representation in $R^5$, vector of 5 numbers&#34;&gt;
+
+
+  &lt;img data-src=&#34;/post/ddi_introduction/drug_vector_example_hu9cd605cb530a37bf9f49f7d51f0a0a7a_25283_2000x2000_fit_lanczos_2.PNG&#34; class=&#34;lazyload&#34; alt=&#34;&#34; width=&#34;1316&#34; height=&#34;277&#34;&gt;
+&lt;/a&gt;
+
+
+  
+  
+  &lt;figcaption data-pre=&#34;Figure &#34; data-post=&#34;:&#34; class=&#34;numbered&#34;&gt;
+    Example of, arguably a bit odd, vector representation in $R^5$, vector of 5 numbers
+  &lt;/figcaption&gt;
+
+
+&lt;/figure&gt;
+
+&lt;p&gt;For example, that a look at information about 
+&lt;a href=&#34;https://www.drugbank.ca/drugs/DB00316&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Acetaminophen (paracetamol)&lt;/a&gt; from DrugBank, where you can find most of the drug properties mentioned here. After having a drug representation in a vector form, we can create a drug pair representation in different ways, like concatenating these drug vectors or applying pairwise sum.&lt;/p&gt;
+&lt;p&gt;In the next post we will be looking at different ways to represent drug in vector form.&lt;/p&gt;
+&lt;h2 id=&#34;references&#34;&gt;References&lt;/h2&gt;
+&lt;p&gt;[1] Zheng Y, Peng H, Zhang X, Zhao Z, Gao X, Li J, DDI-PULearn: a positive-unlabeled learning method for large-scale prediction of drug-drug interactions, BMC Bioinformatics. 2019;20(19):661 
+&lt;a href=&#34;https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-3214-6&#34;&gt;https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-019-3214-6&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[2] Bucşa C, Farcas A, Cazacu I, Daniel-Corneliu L, Achimas A, Mogosan C, Bojita M, How many potential drug-drug interactions cause adverse drug reactions in hospitalized patients?, European journal of internal medicine. 2012; 24. 10.1016
+&lt;a href=&#34;https://www.ejinme.com/article/S0953-6205(12)00249-X/pdf&#34;&gt;https://www.ejinme.com/article/S0953-6205(12)00249-X/pdf&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;[3] Wishart DS, Feunang YD, Guo AC, Lo EJ, Marcu A, Grant JR, Sajed T, Johnson D, Li C, Sayeeda Z, Assempour N, Iynkkaran I, Liu Y, Maciejewski A, Gale N, Wilson A, Chin L, Cummings R, Le D, Pon A, Knox C, Wilson M. DrugBank 5.0: a major update to the DrugBank database for 2018. Nucleic Acids Res. 2017 Nov 8. doi: 10.1093/nar/gkx1037.&lt;/p&gt;
+</description>
+    </item>
     
   </channel>
 </rss>

@@ -3,6 +3,21 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/post/ddi_introduction/</loc>
+    <lastmod>2020-04-27T22:10:49+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2020-04-27T22:10:49+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2020-04-27T22:10:49+02:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/authors/</loc>
   </url>
   
@@ -11,15 +26,7 @@
   </url>
   
   <url>
-    <loc>/</loc>
-  </url>
-  
-  <url>
     <loc>/author/pharmacy-ai/</loc>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
   </url>
   
   <url>
